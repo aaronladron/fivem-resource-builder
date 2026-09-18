@@ -1,27 +1,36 @@
-import fs from "node:fs";
+import { parseArgs } from "node:util";
+import { createResource } from "./create-resource.js";
 
 const args = process.argv;
 
 const command = args[2];
-const resourceName = args[3];
 
 if (!command) {
     console.log("Commande non trouvée.");
 } else if (command === "create") {
 
-    if (!resourceName) {
-        console.log("Nom de la ressource non trouvé.");
-    } else {
-        console.log(`Création de la ressource : ${resourceName}`);
-        fs.mkdirSync(`./${resourceName}`);
-        fs.writeFileSync(
-            `./${resourceName}/fxmanifest.lua`,
-            "fx_version 'cerulean'\ngame 'gta5'\n",
-            "utf8"
-        );
-        fs.mkdirSync(`./${resourceName}/client`);
-        fs.mkdirSync(`./${resourceName}/server`);
-        fs.mkdirSync(`./${resourceName}/shared`);
+    try {
+        const { values, positionals } = parseArgs({
+            args: args.slice(3),
+            options: {
+                framework: { type: "string", default: "standalone" }
+            },
+            allowPositionals: true
+        });
+        const resourceName = positionals[0];
+
+        if (!resourceName) {
+            throw new Error("Nom de la ressource non trouvé.");
+        }
+        if (positionals.length > 1) {
+            throw new Error("Une seule ressource peut être créée à la fois.");
+        }
+
+        createResource(resourceName, values.framework);
+        console.log(`Ressource créée : ${resourceName} (${values.framework})`);
+    } catch (error) {
+        console.error(error instanceof Error ? error.message : "Impossible de créer la ressource.");
+        process.exitCode = 1;
     }
 
 } else if (command === "list") {
