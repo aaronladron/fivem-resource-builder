@@ -14,7 +14,11 @@ if (!command) {
     } else {
         console.log(`Création de la ressource : ${resourceName}`);
         fs.mkdirSync(`./${resourceName}`);
-        fs.writeFileSync(`./${resourceName}/fxmanifest.lua`, "");
+        fs.writeFileSync(
+            `./${resourceName}/fxmanifest.lua`,
+            "fx_version 'cerulean'\ngame 'gta5'\n",
+            "utf8"
+        );
         fs.mkdirSync(`./${resourceName}/client`);
         fs.mkdirSync(`./${resourceName}/server`);
         fs.mkdirSync(`./${resourceName}/shared`);
