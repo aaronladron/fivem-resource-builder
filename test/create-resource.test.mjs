@@ -104,6 +104,7 @@ test("conserve une ressource existante lors d'une seconde création", (t) => {
         "--import", loader, cli, "create", "police_job", "--framework", "qbcore"
     ], { cwd: first.directory, encoding: "utf8" });
     assert.equal(second.status, 1);
+    assert.match(second.stderr, /existe déjà/);
     assert.equal(second.stdout, "");
     assert.equal(fs.readFileSync(manifestPath, "utf8"), manifest);
     assert.equal(fs.readFileSync(path.join(first.directory, "police_job/client/main.lua"), "utf8"), "");

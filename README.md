@@ -36,6 +36,8 @@ Le manifeste déclare les deux fichiers `main.lua`. Ils sont vides sauf pour l'i
 
 Un framework inconnu ou une option invalide arrête la commande avant toute création. Un dossier existant n'est pas écrasé.
 
+La commande explique les conflits de nom, les permissions insuffisantes et le manque d'espace disque. Si une opération échoue après la création du dossier, elle tente de supprimer la ressource incomplète. Si ce nettoyage échoue aussi, le message indique le dossier à vérifier. Un fichier ou dossier présent avant la commande est conservé. Ces erreurs terminent la commande avec le code de sortie `1`.
+
 ## Développement
 
 Les templates sont définis dans `src/frameworks.ts` et la création des fichiers dans `src/create-resource.ts`.
