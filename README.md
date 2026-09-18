@@ -11,6 +11,8 @@ npx tsx src/index.ts create police_job --framework esx
 
 Le dossier est créé dans le répertoire courant. Sans `--framework`, le CLI utilise `standalone`.
 
+Le nom doit contenir au moins un caractère et utiliser uniquement les lettres `a-z` ou `A-Z`, les chiffres, les tirets (`-`) et les underscores (`_`). Par exemple : `police_job` ou `Police-01`. Les espaces, accents et chemins comme `../police` ou `client/police` sont refusés avant toute création. Le nom est conservé tel quel.
+
 | Option | Génération |
 | --- | --- |
 | `standalone` | Aucune dépendance à un framework. |

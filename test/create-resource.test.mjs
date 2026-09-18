@@ -10,14 +10,16 @@ const cli = fileURLToPath(new URL("../src/index.ts", import.meta.url));
 const loader = import.meta.resolve("tsx");
 
 function runCli(t, args) {
-    const directory = fs.mkdtempSync(path.join(os.tmpdir(), "fivem-resource-builder-"));
-    t.after(() => fs.rmSync(directory, { recursive: true, force: true }));
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "fivem-resource-builder-"));
+    t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+    const directory = path.join(root, "workspace");
+    fs.mkdirSync(directory);
     const result = spawnSync(process.execPath, ["--import", loader, cli, ...args], {
         cwd: directory,
         encoding: "utf8"
     });
     assert.ifError(result.error);
-    return { directory, ...result };
+    return { root, directory, ...result };
 }
 
 const cases = [
@@ -106,3 +108,41 @@ test("conserve une ressource existante lors d'une seconde création", (t) => {
     assert.equal(fs.readFileSync(manifestPath, "utf8"), manifest);
     assert.equal(fs.readFileSync(path.join(first.directory, "police_job/client/main.lua"), "utf8"), "");
 });
+
+for (const name of ["Police_Job-01", "123", "a"]) {
+    test(`accepte le nom ${name} sans le modifier`, (t) => {
+        const result = runCli(t, ["create", name]);
+        assert.equal(result.status, 0, result.stderr);
+        assert.deepEqual(fs.readdirSync(result.directory), [name]);
+        assert.ok(fs.statSync(path.join(result.directory, name, "fxmanifest.lua")).isFile());
+    });
+}
+
+for (const name of [
+    "",
+    " ",
+    "police job",
+    "police_job ",
+    "policé",
+    ".",
+    "..",
+    "../escaped_resource",
+    "nested/police_job",
+    "nested\\police_job",
+    "/",
+    "C:\\police_job",
+    "[police_job]",
+    "police.job",
+    "police_job\n",
+    "police_job\r",
+    "police\tjob"
+]) {
+    test(`refuse le nom ${JSON.stringify(name)} avant toute écriture`, (t) => {
+        const result = runCli(t, ["create", name]);
+        assert.equal(result.status, 1);
+        assert.match(result.stderr, name === "" ? /Nom de la ressource non trouvé/ : /Nom de ressource invalide/);
+        assert.equal(result.stdout, "");
+        assert.deepEqual(fs.readdirSync(result.directory), []);
+        assert.deepEqual(fs.readdirSync(result.root), ["workspace"]);
+    });
+}
