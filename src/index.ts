@@ -14,6 +14,7 @@ if (!command) {
     } else {
         console.log(`Création de la ressource : ${resourceName}`);
         fs.mkdirSync(`./${resourceName}`);
+        fs.writeFileSync(`./${resourceName}/fxmanifest.lua`, "");
     }
 
 } else if (command === "list") {
