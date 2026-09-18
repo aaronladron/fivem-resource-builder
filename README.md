@@ -38,6 +38,14 @@ Un framework inconnu ou une option invalide arrête la commande avant toute cré
 
 La commande explique les conflits de nom, les permissions insuffisantes et le manque d'espace disque. Si une opération échoue après la création du dossier, elle tente de supprimer la ressource incomplète. Si ce nettoyage échoue aussi, le message indique le dossier à vérifier. Un fichier ou dossier présent avant la commande est conservé. Ces erreurs terminent la commande avec le code de sortie `1`.
 
+## Lister les ressources
+
+```bash
+npx tsx src/index.ts list
+```
+
+La commande affiche un nom par ligne, trié par nom. Elle reconnaît les sous-dossiers directs du répertoire courant contenant un fichier `fxmanifest.lua`, sans en analyser le contenu. Elle ne parcourt pas les sous-dossiers imbriqués et ignore les liens symboliques. Si aucune ressource n'est trouvée, elle affiche `Aucune ressource trouvée.`. La commande ne modifie aucun fichier.
+
 ## Développement
 
 Les templates sont définis dans `src/frameworks.ts` et la création des fichiers dans `src/create-resource.ts`.

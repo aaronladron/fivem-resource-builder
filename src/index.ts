@@ -1,5 +1,6 @@
 import { parseArgs } from "node:util";
 import { createResource } from "./create-resource.js";
+import { listResources } from "./list-resources.js";
 
 const args = process.argv;
 
@@ -35,7 +36,14 @@ if (!command) {
 
 } else if (command === "list") {
 
-    console.log("Liste des ressources.");
+    try {
+        parseArgs({ args: args.slice(3), allowPositionals: false });
+        const resources = listResources();
+        console.log(resources.length > 0 ? resources.join("\n") : "Aucune ressource trouvée.");
+    } catch (error) {
+        console.error(error instanceof Error ? error.message : "Impossible de lister les ressources.");
+        process.exitCode = 1;
+    }
 
 } else {
 
